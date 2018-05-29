@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Made with Remarkable!
+  </title>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/github.min.css" rel="stylesheet"/>
+  <style type="text/css">
+   body,table tr{background-color:#fff}table tr td,table tr th{border:1px solid #ccc;text-align:left;padding:6px 13px;margin:0}pre code,table,table tr{padding:0}hr,pre code{background:0 0}body{font:16px Helvetica,Arial,sans-serif;line-height:1.4;color:#333;word-wrap:break-word;padding:10px 15px}strong,table tr th{font-weight:700}h1{font-size:2em;margin:.67em 0;text-align:center}h2{font-size:1.75em}h3{font-size:1.5em}h4{font-size:1.25em}h1,h2,h3,h4,h5,h6{font-weight:700;position:relative;margin-top:15px;margin-bottom:15px;line-height:1.1}h1,h2{border-bottom:1px solid #eee}hr{height:0;margin:15px 0;overflow:hidden;border:0;border-bottom:1px solid #ddd}a{color:#4183C4}a.absent{color:#c00}ol,ul{padding-left:15px;margin-left:5px}ol{list-style-type:lower-roman}table tr{border-top:1px solid #ccc;margin:0}table tr:nth-child(2n){background-color:#aaa}table tr td :first-child,table tr th :first-child{margin-top:0}table tr td:last-child,table tr th :last-child{margin-bottom:0}img{max-width:100%}blockquote{padding:0 15px;border-left:4px solid #ccc}code,tt{margin:0 2px;padding:0 5px;white-space:nowrap;border:1px solid #eaeaea;background-color:#f8f8f8;border-radius:3px}pre code{margin:0;white-space:pre;border:none}.highlight pre,pre{background-color:#f8f8f8;border:1px solid #ccc;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px;border-radius:3px}
+  </style>
+ </head>
+ <body>
+  <h1 id="laser-scan-matcher">
+   laser scan matcher 笔记
+  </h1>
+  <h3 id="_1">
+   整体流程
+  </h3>
+  <ol>
+   <li>
+    <code>
+     LaserScanMatcher
+    </code>
+    类中，先
+    <code>
+     initParams();
+    </code>
+    初始化参数，然后设定
+    <code>
+     ros
+    </code>
+    的发布节点和接受节点
+   </li>
+   <li>
+    <p>
+     然后看雷达数据函数
+     <code>
+      LaserScanMatcher::scanCallback
+     </code>
+     ，其中调用了两个函数
+     <br/>
+     <code>
+      laserScanToLDP(scan_msg, curr_ldp_scan);
+     </code>
+     和
+     <code>
+      processScan(curr_ldp_scan, scan_msg-&gt;header.stamp);
+     </code>
+     <br/>
+     ，我们一个一个看
+    </p>
+    <ul>
+     <li>
+      <p>
+       laserScanToLDP函数，把ros的laser_scan转换成本程序定义的雷达格式
+       <code>
+        struct laser_data
+       </code>
+       ，
+       <code>
+        typedef struct laser_data* LDP;
+       </code>
+       绕了个大弯，这个
+       <code>
+        LDP
+       </code>
+       中包含了里程计信息
+       <code>
+        odometry
+       </code>
+       和真是位置
+       <code>
+        true_pose
+       </code>
+       <code>
+        estimate
+       </code>
+      </p>
+     </li>
+     <li>
+      <p>
+       processScan函数，把转换过的雷达格式传入
+      </p>
+      <ul>
+       <li>
+        首先预测根据前后两帧的变化时间预测
+        <code>
+         getPrediction
+        </code>
+        位姿变化
+       </li>
+       <li>
+        然后
+        <code>
+         createTfFromXYTheta
+        </code>
+        得到tf转换，
+        <strong>
+         这里发现个好东西
+         <code>
+          tf::Transform
+         </code>
+         可以直接运算
+         <code>
+          pr_ch_l = laser_to_base_ * f2b_.inverse() * pr_ch * f2b_ * base_to_laser_ ;
+         </code>
+         ,他们分别是上一个tf，
+        </strong>
+        ，最后得到当前预测的位置在全局坐标系下的坐标
+       </li>
+       <li>
+        这里才到了最关键最重要的地方
+        <strong>
+         ICP
+        </strong>
+        ,调用CSM（
+        <a href="https://censi.science/software/csm/">
+         C(anonical) Scan Matcher (CSM)
+        </a>
+        ）的点到线的ICP算法
+        <code>
+         sm_icp(&amp;input_, &amp;output_)
+        </code>
+        ,看了一晚上了，好像看错了库
+       </li>
+       <li>
+        后面就是对
+        <code>
+         sm_icp
+        </code>
+        求得的结果进行验证，并转换成tf，最后整理发布就完鸟。
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     关键的关键
+     <code>
+      sm_icp
+     </code>
+    </p>
+   </li>
+  </ol>
+  <p>
+   <code>
+    sm_icp
+   </code>
+   一个
+   <code>
+    sm_params
+   </code>
+   结构体，并返回一个
+   <code>
+    sm_result
+   </code>
+   ,那么，如果我只想用这个库来完成我的匹配工作，我就只需要知道这个输入的结构，然后调用就完事了。
+   <br/>
+   <code>
+    sm_params
+   </code>
+   在
+   <a href="https://github.com/AndreaCensi/csm/blob/master/csm_manual.pdf">
+    sm_icp手册第7节. Embedding CSM in your programs
+   </a>
+  </p>
+  <hr/>
+  <pre><code>tf::Transform 的骚操作：
+  input_.first_guess[0] = pr_ch_l.getOrigin().getX(); // 得到xy
+  input_.first_guess[1] = pr_ch_l.getOrigin().getY();
+  input_.first_guess[2] = tf::getYaw(pr_ch_l.getRotation()); //得到水平旋转角，帅
+</code></pre>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/highlight.min.js">
+  </script>
+  <script>
+   hljs.initHighlightingOnLoad();
+  </script>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+   MathJax.Hub.Config({"showProcessingMessages" : false,"messageStyle" : "none","tex2jax": { inlineMath: [ [ "$", "$" ] ] }});
+  </script>
+ </body>
+</html>
