@@ -18,7 +18,7 @@
 `sm_icp`一个`sm_params`结构体，并返回一个`sm_result`,那么，如果我只想用这个库来完成我的匹配工作，我就只需要知道这个输入的结构，然后调用就完事了。
 `sm_params`在[sm_icp手册第7节. Embedding CSM in your programs](https://github.com/AndreaCensi/csm/blob/master/csm_manual.pdf)
 
-
+接下来就实验一下吧
 		
 	
 	
