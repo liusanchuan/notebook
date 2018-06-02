@@ -1,5 +1,5 @@
 # laser scan matcher 笔记
-### 整体流程
+### 整体流程 
 1. `LaserScanMatcher`类中，先`  initParams();`初始化参数，然后设定`ros`的发布节点和接受节点
 2. 然后看雷达数据函数`LaserScanMatcher::scanCallback`，其中调用了两个函数
 ` laserScanToLDP(scan_msg, curr_ldp_scan);`和` processScan(curr_ldp_scan, scan_msg->header.stamp);`
@@ -18,7 +18,15 @@
 `sm_icp`一个`sm_params`结构体，并返回一个`sm_result`,那么，如果我只想用这个库来完成我的匹配工作，我就只需要知道这个输入的结构，然后调用就完事了。
 `sm_params`在[sm_icp手册第7节. Embedding CSM in your programs](https://github.com/AndreaCensi/csm/blob/master/csm_manual.pdf)
 
-接下来就实验一下吧
+接下来就实验一下吧.
+`星期三, 30. 五月 2018 07:01下午 `今天试了一下这个库，运行不出来，现在在决定要不要放弃自己写，还是说去改原来的库文件。 
+先自己测试下吧，最后实在是不行的话再改原文件吧。
+先分析一下当前存在的问题，当前的问题聚焦再`sm_icp`上面：  
+	-  一方面可能是输入参数的问题，`params`初始化是不是正确,先检验这个吧
+	-  另一方面就是，输入的`sm_result1`的结果的问题
+`星期三, 30. 五月 2018 08:42下午 `  
+c++编码能力太差了，哎，写个程序，费死个老劲啊
+
 		
 	
 	

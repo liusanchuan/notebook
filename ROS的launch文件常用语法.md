@@ -1,8 +1,5 @@
 # ROS的launch文件常用语法
-`星期二, 29. 五月 2018 07:45下午 `
-
-
-[TOC] 
+[TOC]  
 ### 1. 最外围
 必须有 ` <launch> ... ... </launch>` 
 ### 2. 节点
@@ -16,12 +13,11 @@
 	ns="把当前节点归到一个命名空间下">
 </node>
 ```  
-- 1.1.节点重命名  
-<br/>
+- 节点重命名  
 ```
 <remap from="original-name" to="new-name" />  
 ```
-- 1.2. 
+
 ### 3.  including引入其他launch文件  
 用一个find文件找到其他包的主目录，就是cmakelist文件的目录
 
@@ -37,6 +33,17 @@
 - param设定参数
 `<param name="foo" value="$(arg my_foo)" />`
 > 上面的arg 变量必须对应一个`<arg ... />` 标签，arg中的参数包括 ` name="arg名字"`，`default="默认值"`，`value=“arg值”`
+ 
+### 5. 发布tf静态坐标转换 （欧拉角和四元数）
+- 欧拉角表示  
+`  <node pkg="tf" 
+	type="static_transform_publisher" 
+	name="base_link_to_laser"
+    	args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /laser 40" />`
+    其中 `args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /laser 40"`中，前三个数是xyz坐标，后三个是`yaw` `pitch` `roll` 三个角度`yaw`是围绕x轴旋转的偏航角，`pitch`是围绕y轴旋转的俯仰角，`roll`是围绕z轴旋转的翻滚角），在后面是两个frame id，第一个是`/base_link`是父坐标系，后一个是子坐标系，最后一个参数`40`是period_in_ms 即40ms发送一次。
+- 四元数表示
+` static_transform_publisher`的参数顺序` x y z qx qy qz qw frame_id child_frame_id  period_in_ms` 
+当表示二维坐标时有一个简单的方法，绕z轴转`a°`，则`[qx qy qz qw] = [0  0  sin(a)  cos(a)]`,哈哈，非常简单，仅适用于二维机器人。这是一个[四元数可视化网站](https://quaternions.online/) 。
  
 
 
