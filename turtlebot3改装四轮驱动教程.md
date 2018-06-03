@@ -25,6 +25,17 @@ setTorque(left_wheel_idDown_, true); //使能新添加的电机
 setTorque(right_wheel_idDown_, true);
 ```
 
+如果需要修改`dynamixal`的ID:
+
+ - 需要先获得当前ID，连接这个电机和opencr，使用arduinoIDE中的`opeccr--DynamixelWorkbench--Find Dynamixel`例子，会循环遍历每一个ID，并返回其结果当前链接的。
+
+ - 修改ID，使用arduinoIDE中的`opeccr--DynamixelWorkbench--d_ID_change`例子，修改
+
+   ```c
+   #define DXL_ID      1  //当前ID
+   #define NEW_DXL_ID  2 	//新ID
+   ```
+
 #### speedControl 修改
 
 在`turtlebot3_motor_driver.cpp`文件中，修改`bool Turtlebot3MotorDriver::speedControl`函数。
@@ -65,7 +76,7 @@ bool Turtlebot3MotorDriver::speedControl(int64_t left_wheel_value, int64_t right
 
 ![原始链接](/home/lt/%E6%96%87%E6%A1%A3/%E7%AC%94%E8%AE%B0/data/tb2link_origin.png)
 
-我们可以看到当前的，旋转中心在，后轮的中间，所以我们需要把baselink发布到改装后的四轮中心。
+我们可以看到当前的，旋转中心在，后轮的中间，所以我们需要把baselink发布到改装后的四轮中心。需要根据对应的安装位置更改对应的`tf tree`
 
 
 

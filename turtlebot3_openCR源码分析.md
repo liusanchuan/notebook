@@ -1,10 +1,10 @@
 # turtlebot3 OpenCR源码分析
 
-首先，打开文件`点击File → Examples → turtlebot3 → turtlebot_waffle → turtlebot3_core`
+首先，打开Arduino IDE中文件`File → Examples → turtlebot3 → turtlebot_waffle → turtlebot3_core`
 
 包括四个文件：
 
-```
+```sh
 turtlebot3_core.ino		-- Arduino主文件     
 turtlebot3_motor_driver.h		-- 电机控制头文件
 turtlebot3_motor_driver.cpp		-- 电机控制文件
@@ -49,8 +49,6 @@ class Turtlebot3MotorDriver
  private:
   uint32_t baudrate_;
   float  protocol_version_;
-  uint8_t left_wheel_id_;
-  uint8_t right_wheel_id_;
   dynamixel::PortHandler *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
 
@@ -59,5 +57,6 @@ class Turtlebot3MotorDriver
 };
 ```
 
+在这个类中，需要关注的就是对电机的增删修改操作，主要步骤是，先在init中添加对应的电机ID，然后
 
-
+添加使能，最后把对定的控制变量添加到`speedcontrol`对应的函数中。
