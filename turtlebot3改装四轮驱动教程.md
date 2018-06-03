@@ -1,28 +1,18 @@
+# Turtlebot3 改装四轮驱动
+
 [TOC]
-
-# 20180603 工作日志
-
-### 激光雷达测试
-
-测试结果：通电后电机不转动，usb端口连接正常，ROS发布雷达节点正常，但发布后读取不到无数据
-
-可能原因：驱动器转接板替换测试
-
-
-
-### turtlebot3 四轮驱动
 
 > 改装思路，将原来后驱的两轮的左右速度分别复制给新添加的同侧电机，然后修改ROS 的tf树，使旋转中心在新添加的旋转中心上。
 >
 > 具体改装过程分为四个步骤：
 
-#### 1. 硬件连接
+### 1. 硬件连接
 
 在`opencr`上添加两个`dynamixal`电机，并设计电机的ID为3和4;
 
 去掉原来waffle上面的万向轮，把新添加的两个电机固定上
 
-#### 2. Arduino 程序修改
+### 2. Arduino 程序修改
 
 *Waffle华夫型*:`点击File → Examples → turtlebot3 → turtlebot_waffle → turtlebot3_core`
 
@@ -35,7 +25,7 @@ setTorque(left_wheel_idDown_, true); //使能新添加的电机
 setTorque(right_wheel_idDown_, true);
 ```
 
-####   speedControl
+#### speedControl 修改
 
 在`turtlebot3_motor_driver.cpp`文件中，修改`bool Turtlebot3MotorDriver::speedControl`函数。
 
@@ -69,15 +59,13 @@ bool Turtlebot3MotorDriver::speedControl(int64_t left_wheel_value, int64_t right
 }
 ```
 
-#### 3. tf 更新
+### 3. tf 更新
 
 原先的旋转中心在后轮的两轮中点，现在新添加了四个轮后，就到了四个轮组成的矩形的几何中心了。
 
-![原始链接](./data/tb2link_origin.png)
+![原始链接](/home/lt/%E6%96%87%E6%A1%A3/%E7%AC%94%E8%AE%B0/data/tb2link_origin.png)
 
 我们可以看到当前的，旋转中心在，后轮的中间，所以我们需要把baselink发布到改装后的四轮中心。
-
-
 
 
 
