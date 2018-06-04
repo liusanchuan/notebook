@@ -63,7 +63,8 @@
     sor.filter(*cloud_filtered);
 ```
 ### 3 配准 registration
-
+pcl中的配准算法有`ICP` ，`NDT`
+[短短几句话，说出了环境重建的核心，好文章](http://pointclouds.org/documentation/tutorials/registration_api.php#registration-api)
 
 
 
