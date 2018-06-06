@@ -66,7 +66,37 @@
 pcl中的配准算法有`ICP` ，`NDT`
 [短短几句话，说出了环境重建的核心，好文章](http://pointclouds.org/documentation/tutorials/registration_api.php#registration-api)
 
-
+**程序示例**
+~~~
+#include <iostream>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
+using namespace std;
+int  main(int argc,char** argv){
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud1(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud2(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PCDReader reader;
+    reader.read("sample.pcd",*pointCloud1);
+    *pointCloud2=*pointCloud1;
+    for (int i = 0; i < pointCloud2->points.size(); ++i) {
+        pointCloud2->points[i].x+=0.3;
+        pointCloud2->points[i].y-=0.2;
+    }
+    pcl::IterativeClosestPoint<pcl::PointXYZ,pcl::PointXYZ> icp;
+    icp.setInputSource(pointCloud1);
+    icp.setInputTarget(pointCloud2);
+    pcl::PointCloud<pcl::PointXYZ> final;
+    icp.align(final);
+    std::cout << "has converged:" << icp.hasConverged() << " score: " <<
+              icp.getFitnessScore() << std::endl;
+    std::cout<<icp.getFitnessScore()<<" "<<endl;
+    std::cout<<icp.getFinalTransformation()<<" "<<endl;
+    return 0;
+}
+~~~
+需要注意的几点：
+ICP中电云的定义必须要是`    pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud1(new pcl::PointCloud<pcl::PointXYZ>);`这样子的，指针型
 
 
 
