@@ -1,5 +1,9 @@
 #ubuntu 双系统装机流程笔记-三川
+
+`星期三, 06. 六月 2018 04:59下午 `
+
 [TOC]
+## 装ububtu 
 ### 准备好启动盘
 官网下载，U盘制作。
 ### 压缩出空余硬盘
@@ -23,7 +27,7 @@
 一般不要选择安装中更新，装不装的好还不一定呢，装好了改了**源**以后再更新才是妥妥的。
 ... 
 ### 更新 引导`grub` 选项
-在终端中，输入
+在终端中，输入  
 `sudo update-grub`  
 `sudo grub-install /dev/sda`  
 这是一个师弟给我说的，这样才能让BIOS引导到新装的系统上。
@@ -36,7 +40,7 @@
 用`aptitude`代替`apt-get`,听说可以很好的解决版本的依赖问题。
 两者的用法一模一样。
 
-### 安装`ROS`
+## 安装`ROS`
 机器人重度玩家，不装`ros`要Ubuntu干嘛？
 
 - 添加源：`sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'`  
@@ -55,7 +59,11 @@
 `roscore`  
 `rosrun turtlesim turtlesim_node `
 `rosrun turtlesim turtle_teleop_key `
+## 装常用软件  
 
+本人常用的软件有 `vs code`,`clion`,`有道词典`，`搜狗拼音`，具体在另一篇文章里
+
+---
 all well done   
  开始全新的学习之旅吧.......
 
