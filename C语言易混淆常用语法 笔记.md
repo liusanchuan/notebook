@@ -23,12 +23,12 @@ switch(表达式){
 - `floor`向下取整 `floor（2.5）=2`，`floor（-2.5）=3`
 - `ceil`（装天花板）向上取整 `ceil（2.5）=3`，`ceil（-2.5）=2`
 - `（int）`强制类型转换，直接去掉小数部分
-### boost::format
+### [boost::format](https://www.boost.org/doc/libs/1_66_0/libs/format/doc/format.html)
 
  - 引入 `#include <boost/format.hpp>`
  - 控制输出 `std::cout <<boost::format("%1%\n %2%\n %3%")%"first"%12%a[1];`， 其中`%1%`代表后面的第一个参数，`%2%`第二个.. ,后面的`%"first"`就是输入给`1`的参数。
  - 也可以先定义后填入值,显得非常之方便啊。
- 
+
 ~~~
      boost::format fmt("%1%\n %2%\n %3%");
     fmt% "first";
@@ -37,3 +37,4 @@ switch(表达式){
 ~~~
 - 与`std::string` 转换，`string s=fmt.str()`,或者`string s=str(fmt)`.
 - 也可使用标准输出 `std::cout<<boost::format("%s  %d  \n")%"toto:" %12.5;`
+
