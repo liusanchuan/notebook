@@ -240,14 +240,13 @@ void pcl::fromPCLPointCloud(const pcl:PCLPointCloud2 & msg                      
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
   // Create the segmentation object
-  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  pcl::SACSegmentation<pcl::PointXYZ> seg; // 采样一致性分割算法 sample consensus
   // Optional
   seg.setOptimizeCoefficients (true);
   // 参数
   seg.setModelType (pcl::SACMODEL_PLANE);
   seg.setMethodType (pcl::SAC_RANSAC);
   seg.setDistanceThreshold (0.01);
-
   seg.setInputCloud (cloud);
   seg.segment (*inliers, *coefficients);
 ```
