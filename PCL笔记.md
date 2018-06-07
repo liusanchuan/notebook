@@ -112,7 +112,9 @@ target_link_libraries (passthrough ${PCL_LIBRARIES}) #所有的库
 
 ![体素滤波前后的效果](/home/sc/%E6%96%87%E6%A1%A3/%E7%AC%94%E8%AE%B0/img/voxel.png  "体素滤波前后的效果非常不一样") 体素滤波前后的效果，分别设置体素大小为`0.01`和`0.05`
 
-#### 去除外点 滤波
+#### 静外点去除滤波
+
+去除外点滤波还是很有用的，空间中的杂点对
 
 ```
     pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
@@ -161,7 +163,71 @@ int  main(int argc,char** argv){
 需要注意的几点：
 ICP中电云的定义必须要是`    pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud1(new pcl::PointCloud<pcl::PointXYZ>);`这样子的，指针型
 
+### 4 已知位姿的多帧深度图拼接
+
+主要流程：读取深度图和彩色图，读取相机轨迹位姿，拼接，
+
+主要代码：
+
+```c++
+    typedef pcl::PointXYZRGB PointT;
+    typedef pcl::PointCloud<PointT> PointCloud;
+    PointCloud::Ptr pointcloud(new PointCloud);
+    for (int i = 0; i < 5; ++i) {
+        cout<<boost::format("正在转换第%1%张\n")%i;
+        cv::Mat color=colorImgs[i];
+        cv::Mat depth=depthImgs[i];
+        Eigen::Isometry3d T=poses[i];
+        for (int v = 0; v < color.rows; ++v) {
+            for (int u = 0; u < color.cols; ++u) {
+                unsigned int d  =depth.ptr<unsigned short >(v)[u];
+                if(d==0){
+                    continue;
+                }
+                Eigen::Vector3d point;
+                point[2]=double(d)/depthScale;
+                point[0]=(u-cx)*point[2]/fx; //相机参数投影彩色点
+                point[1]=(v-cy)*point[2]/fy;
+                Eigen::Vector3d pointWorld=T*point;
+                PointT p;
+                p.x=pointWorld[0];p.y=pointWorld[1];p.z=pointWorld[2];
+                p.b=color.data[v*color.step+u*color.channels()];
+                p.g=color.data[v*color.step+u*color.channels()+1];
+                p.r=color.data[v*color.step+u*color.channels()+2];
+                pointcloud->points.push_back(p);
+            }
+        }
+    }
+    pointcloud->is_dense=false;
+```
+
+实验效果：
+
+![](./img/whole.png)
+
+但是局部显示重影严重，试着用**体素滤波**下；
+
+![](./img/jointMap.png)
+
+用过`staticOutlierRemoval`算法后小姑果然非常好
+
+![](./img/staticOutlierRemoval.png)
+
+### 5 点云格式转换
+
+> **1.pcl::fromPCLPointCloud2()**  
+>
+> **2.pcl::toPCLPointCloud2()**
 
 
 
+- `pcl::pointcloud2`二进制数据blob到`PCL::PointCloud<pointT>`
 
+```
+void pcl::fromPCLPointCloud(const pcl:PCLPointCloud2 & msg                                                   pcl::PointCloud<PointT>  & cloud                                                     const MsgFieldMap & filed_map)
+```
+
+函数使用field_map实现将一个pcl::pointcloud2二进制数据blob到PCL::PointCloud<pointT>对象
+
+- `pcl::toPCLPointCloud2(*cloud_filtered, *cloud_filtered_blob[]);`，
+- ` void pcl::fromROSMsg（const pcl:PCLPointCloud2 & msg，::PointCloud<PointT>  & cloud）` 和ros消息互相转换
