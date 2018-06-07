@@ -231,3 +231,30 @@ void pcl::fromPCLPointCloud(const pcl:PCLPointCloud2 & msg                      
 
 - `pcl::toPCLPointCloud2(*cloud_filtered, *cloud_filtered_blob[]);`，
 - ` void pcl::fromROSMsg（const pcl:PCLPointCloud2 & msg，::PointCloud<PointT>  & cloud）` 和ros消息互相转换
+
+
+
+### 6 平面模型分割
+
+```c++
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  // Create the segmentation object
+  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  // Optional
+  seg.setOptimizeCoefficients (true);
+  // 参数
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (0.01);
+
+  seg.setInputCloud (cloud);
+  seg.segment (*inliers, *coefficients);
+```
+
+
+
+### 7 分割并提取点云索引 [link](http://pointclouds.org/documentation/tutorials/extract_indices.php#extract-indices)
+
+通过平面分割算法提取出索引，散后使用`Extract index filter`去滤波。
+
