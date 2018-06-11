@@ -97,3 +97,17 @@ Values result=optimizer.optimize();
     }
 ```
 
+### 读写 g2o文件
+
+```c++
+#include <gtsam/slam/dataset.h> //引入头文件
+//读
+NonlinearFactorGraph::shared_ptr graph1;
+Values::shared_ptr initialEstamate1;
+string g2ofile=findExampleDataFile("noisyToyGraph.txt");
+bool is3D =false;
+boost::tie(graph1,initialEstamate1)=readG2o(g2ofile,is3D);
+//写 g2o文件
+writeG2o(graph,result,"graph2g2o.g2o"); //args: 因子图 ，变量结果，目标文件名
+```
+
