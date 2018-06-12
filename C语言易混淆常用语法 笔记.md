@@ -38,3 +38,20 @@ switch(表达式){
 - 与`std::string` 转换，`string s=fmt.str()`,或者`string s=str(fmt)`.
 - 也可使用标准输出 `std::cout<<boost::format("%s  %d  \n")%"toto:" %12.5;`
 
+### boost::tuple 和 关联容器pair
+
+#### pair是关联容器
+
+定义 `pair<T1,T2> p1`;
+
+初始化 `pair<T1,T2> p1(v1,v2)`
+
+赋值 `p1=make_pair<T1,T2>`
+
+#### boost::tuple 
+
+`boost::tuple `与pair的两者关联相比可以定义一个多元的容器
+
+如`tuple<X,X,X> t1`
+
+ 
