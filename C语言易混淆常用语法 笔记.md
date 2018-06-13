@@ -42,16 +42,27 @@ switch(表达式){
 
 #### pair是关联容器
 
-定义 `pair<T1,T2> p1`;
+**定义** `pair<T1,T2> p1`;
 
-初始化 `pair<T1,T2> p1(v1,v2)`
+**初始化** `pair<T1,T2> p1(v1,v2)`
 
-赋值 `p1=make_pair<T1,T2>`
+**赋值** `p1=make_pair<T1,T2>`
+
+**读取**
+
+- ` T1 vx= p1.first;  T2 vy= p1.second;`
+- `boost::tie(vx,vy)=p1`
 
 #### boost::tuple 
 
 `boost::tuple `与pair的两者关联相比可以定义一个多元的容器
 
-如`tuple<X,X,X> t1`
+**定义**`tuple<T1,T2,T3> t`
+
+**读取** `T1 t1= boost::get<1>(t);`
+
+
+
+#### 
 
  

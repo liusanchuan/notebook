@@ -61,6 +61,27 @@ graph.emplace_shared<PriorFactor<Pose2> >(1, Pose2(0, 0, 0), priorNoise);
   initialEstimate.insert(1, Pose2(0.5, 0.0,  0.2   )); //加入一个变量 arg1：变量的标签 arg2:这个变量的值
 ```
 
+### 噪声定义
+
+gtsam中的噪声有很多类型 
+
+`namespace NM = gtsam::noiseModel;`
+
+
+
+```c++
+// Set Noise parameters
+Vector priorSigmas = Vector3(1,1,M_PI);
+Vector odoSigmas = Vector3(0.05, 0.01, 0.2);
+const NM::Base::shared_ptr // 基类型
+  priorNoise = NM::Diagonal::Sigmas(priorSigmas), //prior 对角线噪声
+  odoNoise = NM::Diagonal::Sigmas(odoSigmas), // odometry
+  gaussian = NM::Isotropic::Sigma(1, sigmaR), // non-robust 各项同性噪声
+  tukey = NM::Robust::Create(NM::mEstimator::Tukey::Create(15), gaussian), //robust 
+```
+
+
+
 ### 优化方法
 
 #### GaussNewton法
