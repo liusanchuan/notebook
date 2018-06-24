@@ -45,3 +45,20 @@
 
 - 先找一个装有Ubuntu系统的电脑测试：安装 `sudo apt-get install ros-kinetic-librealsense `，`sudo apt-get install ros-kinetic-realsense-camera `，然后运行`roslaunch realsense_camera r200_nodelet_default.launch `，再用`rqtimage_view`查看,更改对应的图像节点名字,如果能够显示出来,就不是R200相机的问题.否则就是相机坏了.
 - 再检查Intel Joule的驱动有没有装好,可以重新装一遍,注意观察有没有报错提示,如果有并且是系统内核不对,高端玩家可以试着改内核,新手就重装系统再来一遍吧.
+
+### R200驱动怎么装?
+
+- 安装R200驱动 参考[官网](http://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_realsense/#installation) 以及 [ROS wiki](http://wiki.ros.org/librealsense) 
+
+```shell
+$ sudo apt-get install linux-headers-generic
+$ sudo apt-get install ros-kinetic-librealsense
+
+#稳定版
+$ cd catkin_ws/src
+$ git clone https://github.com/intel-ros/realsense.git
+$ cd realsense
+$ git checkout 1.8.0
+$ cd catkin_ws && catkin_make -j2
+```
+
