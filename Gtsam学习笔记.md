@@ -132,3 +132,29 @@ boost::tie(graph1,initialEstamate1)=readG2o(g2ofile,is3D);
 writeG2o(graph,result,"graph2g2o.g2o"); //args: 因子图 ，变量结果，目标文件名
 ```
 
+### iSAM 更新过程
+
+在文件ISAM2.cpp的update函数中
+
+1. 添加新的因子
+
+2. 初始化新的变量
+
+3. 标记线性化更新
+
+4. 标记 变化量大于阈值的key
+
+5. 标记所有与变量相关小团体clique 
+   $$
+   \beta: J=\{\Delta_{j}\in\Delta|\Delta_{j}\geq\beta\}.
+   $$
+   以及他们的所有父节点
+
+6. 更新线性化点对于标记的变量 
+   $$
+   \Theta{J}:=\Theta{J}+\Delta_{J}.
+   $$
+
+7. 线性化 新的因子
+
+8. 重新整理贝叶斯数的树顶
